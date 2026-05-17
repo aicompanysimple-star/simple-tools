@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simple Tools | シンプルツール</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="シンプルツールのナビゲーション">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">ST</span>
+          <div>
+            <h1>Simple Tools</h1>
+            <p>シンプルツール</p>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="メイン">
+          <button class="nav-item is-active" type="button" data-view="home">
+            <span aria-hidden="true">01</span>
+            ホーム
+          </button>
+          <button class="nav-item" type="button" data-view="promptPad">
+            <span aria-hidden="true">02</span>
+            プロンプト
+          </button>
+          <button class="nav-item" type="button" data-view="textCleaner">
+            <span aria-hidden="true">03</span>
+            テキスト整形
+          </button>
+          <button class="nav-item" type="button" data-view="settings">
+            <span aria-hidden="true">04</span>
+            設定
+          </button>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <section class="view is-visible" id="view-home" aria-labelledby="home-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">Hub</p>
+              <h2 id="home-title">有効なツール</h2>
+            </div>
+            <button class="secondary-button" type="button" data-view="settings">
+              設定
+            </button>
+          </div>
+
+          <div class="tool-grid" id="enabled-tools"></div>
+        </section>
+
+        <section class="view" id="view-settings" aria-labelledby="settings-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">Hub</p>
+              <h2 id="settings-title">ツール設定</h2>
+            </div>
+          </div>
+
+          <div class="settings-list" id="tool-settings"></div>
+        </section>
+
+        <section class="view" id="view-promptPad" aria-labelledby="prompt-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">Tool</p>
+              <h2 id="prompt-title">プロンプトパッド</h2>
+            </div>
+            <button class="primary-button" type="button" id="new-prompt-button">
+              新規
+            </button>
+          </div>
+
+          <div class="prompt-layout">
+            <section class="prompt-list-pane" aria-label="保存済みプロンプト">
+              <label class="field-label" for="prompt-search">検索</label>
+              <input id="prompt-search" class="text-field" type="search" placeholder="タイトル、タグ、本文">
+              <div class="prompt-list" id="prompt-list"></div>
+            </section>
+
+            <section class="prompt-editor" aria-label="プロンプト編集">
+              <form id="prompt-form">
+                <input type="hidden" id="prompt-id">
+
+                <label class="field-label" for="prompt-title-field">タイトル</label>
+                <input id="prompt-title-field" class="text-field" type="text" placeholder="週次レビュー用プロンプト">
+
+                <label class="field-label" for="prompt-tags-field">タグ</label>
+                <input id="prompt-tags-field" class="text-field" type="text" placeholder="codex, レビュー">
+                <div class="tag-picker" id="tag-picker" aria-label="登録済みタグ"></div>
+
+                <label class="field-label" for="prompt-body-field">本文</label>
+                <textarea id="prompt-body-field" class="text-area" placeholder="ここにプロンプトを書く"></textarea>
+
+                <div class="editor-actions">
+                  <button class="primary-button" type="submit">保存</button>
+                  <button class="secondary-button" type="button" id="copy-prompt-button">コピー</button>
+                  <button class="danger-button" type="button" id="delete-prompt-button">削除</button>
+                </div>
+              </form>
+              <p class="status-line" id="status-line" role="status"></p>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-textCleaner" aria-labelledby="text-cleaner-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">Tool</p>
+              <h2 id="text-cleaner-title">テキスト整形</h2>
+            </div>
+            <button class="secondary-button" type="button" id="clear-text-button">
+              クリア
+            </button>
+          </div>
+
+          <div class="cleaner-layout">
+            <section class="cleaner-panel" aria-label="整形前テキスト">
+              <label class="field-label" for="text-cleaner-input">入力</label>
+              <textarea id="text-cleaner-input" class="text-area cleaner-area" placeholder="整えたいテキストを貼り付ける"></textarea>
+
+              <div class="cleaner-actions" aria-label="整形アクション">
+                <button class="secondary-button" type="button" data-cleaner-action="trimLines">行の前後を削る</button>
+                <button class="secondary-button" type="button" data-cleaner-action="normalizeSpaces">空白を整える</button>
+                <button class="secondary-button" type="button" data-cleaner-action="removeBlankLines">空行を削除</button>
+                <button class="secondary-button" type="button" data-cleaner-action="toBullets">箇条書き化</button>
+              </div>
+            </section>
+
+            <section class="cleaner-panel" aria-label="整形後テキスト">
+              <div class="output-head">
+                <label class="field-label" for="text-cleaner-output">出力</label>
+                <button class="primary-button compact-button" type="button" id="copy-cleaner-output-button">コピー</button>
+              </div>
+              <textarea id="text-cleaner-output" class="text-area cleaner-area" placeholder="整形結果がここに表示されます"></textarea>
+
+              <div class="stats-grid" aria-label="テキスト情報">
+                <div class="stat-card">
+                  <span>文字数</span>
+                  <strong id="text-stat-chars">0</strong>
+                </div>
+                <div class="stat-card">
+                  <span>行数</span>
+                  <strong id="text-stat-lines">0</strong>
+                </div>
+              </div>
+              <p class="status-line" id="text-cleaner-status" role="status"></p>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
