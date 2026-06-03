@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Super Memo</title>
+    <link rel="icon" type="image/png" href="assets/super-memo-icon.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body data-theme="dark">
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="icon-focus" viewBox="0 0 24 24"><path d="M8 3H4a1 1 0 0 0-1 1v4h2V5h3V3Zm8 0v2h3v3h2V4a1 1 0 0 0-1-1h-4ZM5 16H3v4a1 1 0 0 0 1 1h4v-2H5v-3Zm14 0v3h-3v2h4a1 1 0 0 0 1-1v-4h-2Z"/></symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3l-3.3 3.3Z"/></symbol>
+      <symbol id="icon-save" viewBox="0 0 24 24"><path d="M5 3h12l2 2v16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm1 2v5h10V5H6Zm2 12h8v-5H8v5Zm1-10h5V5H9v2Z"/></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24"><path d="M10.5 4a6.5 6.5 0 1 0 4.1 11.5l4 4 1.4-1.4-4-4A6.5 6.5 0 0 0 10.5 4Zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z"/></symbol>
+      <symbol id="icon-pin" viewBox="0 0 24 24"><path d="m15 3 6 6-2 2-2-2-4 4v6l-1 1-4.5-4.5L4 19l-1-1 3.5-3.5L2 10l1-1h6l4-4-2-2 2-2Z"/></symbol>
+      <symbol id="icon-scissors" viewBox="0 0 24 24"><path d="M7 14a3 3 0 1 0 2.1.9L12 12l-2.9-2.9A3 3 0 1 0 7 10c.8 0 1.5-.3 2.1-.9L10.6 10l-1.5 1.5A3 3 0 0 0 7 14Zm10-8 1.4 1.4L13.8 12l4.6 4.6L17 18l-6-6 6-6ZM7 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm0 10a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></symbol>
+      <symbol id="icon-blocks" viewBox="0 0 24 24"><path d="M4 4h7v7H4V4Zm9 2h7v7h-7V6Zm-3 8h7v7h-7v-7Zm-6 2h4v4H4v-4Z"/></symbol>
+      <symbol id="icon-copy" viewBox="0 0 24 24"><path d="M8 7h11v13H8V7Zm2 2v9h7V9h-7ZM5 4h11v2H7v10H5V4Z"/></symbol>
+      <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M4 4h16v5H4V4Zm2 2v1h12V6H6Zm0 5h12v9H6v-9Zm4 2v2h4v-2h-4Z"/></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 12H7.8L7 9Zm3 2 .3 8h1.5l-.2-8H10Zm4 0-.3 8h-1.5l.2-8H14Z"/></symbol>
+      <symbol id="icon-files-check" viewBox="0 0 24 24"><path d="M5 3h10l4 4v10h-2V8h-3V5H7v12h5v2H5V3Zm8 15 2-2 1.4 1.4L13 20.8 10.6 18.4 12 17l1 1Zm-4-6h6v2H9v-2Zm0-4h3v2H9V8Z"/></symbol>
+      <symbol id="icon-files-x" viewBox="0 0 24 24"><path d="M5 3h10l4 4v10h-2V8h-3V5H7v12h5v2H5V3Zm6.4 13 1.6-1.6 1.6 1.6 1.4-1.4-1.6-1.6 1.6-1.6-1.4-1.4-1.6 1.6-1.6-1.6-1.4 1.4 1.6 1.6-1.6 1.6 1.4 1.4ZM9 8h3v2H9V8Z"/></symbol>
+      <symbol id="icon-home" viewBox="0 0 24 24"><path d="M12 3 3 10.8 4.3 12.3 6 10.9V20h6v-5h2v5h6v-9.1l1.7 1.4 1.3-1.5L12 3Zm0 2.6 6 5.2V18h-2v-5H10v5H8v-7.2l6-5.2Z"/></symbol>
+    </svg>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="シンプルツールのナビゲーション">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <img src="assets/super-memo-icon.png" alt="">
+          </span>
+          <div class="brand-copy">
+            <h1>Super Memo</h1>
+            <p>ツール集</p>
+          </div>
+          <button class="sidebar-toggle" type="button" id="sidebar-toggle-button" aria-label="サイドバーを折り畳む" aria-pressed="false">‹</button>
+        </div>
+
+        <nav class="nav-list" aria-label="メイン">
+          <button class="nav-item is-active" type="button" data-view="home" data-short="H">
+            <span class="nav-label">ホーム</span>
+          </button>
+          <button class="nav-item" type="button" data-view="superMemo" data-short="S">
+            <span class="nav-label">Super Memo</span>
+          </button>
+          <button class="nav-item" type="button" data-view="promptPad" data-short="P">
+            <span class="nav-label">プロンプト</span>
+          </button>
+          <button class="nav-item" type="button" data-view="textCleaner" data-short="M">
+            <span class="nav-label">メモ整形</span>
+          </button>
+          <button class="nav-item" type="button" data-view="pomodoro" data-short="T">
+            <span class="nav-label">ポモドーロ</span>
+          </button>
+          <button class="nav-item" type="button" data-view="timezones" data-short="Z">
+            <span class="nav-label">世界時計</span>
+          </button>
+          <button class="nav-item" type="button" data-view="subscriptions" data-short="¥">
+            <span class="nav-label">サブスク</span>
+          </button>
+          <button class="nav-item" type="button" data-view="bookmarks" data-short="B">
+            <span class="nav-label">ブックマーク</span>
+          </button>
+          <button class="nav-item" type="button" data-view="videoFinder" data-short="V">
+            <span class="nav-label">動画検索</span>
+          </button>
+          <button class="nav-item" type="button" data-view="calculator" data-short="=">
+            <span class="nav-label">電卓</span>
+          </button>
+          <button class="nav-item" type="button" data-view="settings" data-short="⚙">
+            <span class="nav-label">設定</span>
+          </button>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <section class="view is-visible" id="view-home" aria-labelledby="home-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">ホーム</p>
+              <h2 id="home-title">知識を分類せず、繋げて育てる</h2>
+            </div>
+            <button class="primary-button" type="button" data-view="superMemo">
+              新しいメモ
+            </button>
+          </div>
+
+          <div class="home-hero">
+            <div>
+              <h3>Super Memo</h3>
+              <p>タイムスタンプID、プロパティ、内部リンク、グラフビューで、会議メモもアイデアメモも同じ知識グラフに積み上げます。</p>
+            </div>
+            <button class="secondary-button" type="button" data-view="superMemo">Super Memoを開く</button>
+          </div>
+
+          <section class="feedback-panel" aria-labelledby="feedback-title">
+            <div>
+              <p class="eyebrow">Feedback</p>
+              <h3 id="feedback-title">フィードバックを送る</h3>
+              <p>使用感や欲しいテンプレートを入力して、aicompany.simple@gmail.com 宛のメール下書きを作成できます。</p>
+            </div>
+            <div class="feedback-actions">
+              <button class="secondary-button compact-button" type="button" id="copy-feedback-request-button">フィードバックを書く</button>
+              <button class="secondary-button compact-button" type="button" id="copy-template-request-button">テンプレート要望を書く</button>
+            </div>
+            <div class="feedback-form">
+              <label>
+                種類
+                <select id="feedback-kind-field" class="text-field compact-select">
+                  <option value="feedback">フィードバック</option>
+                  <option value="template">テンプレート要望</option>
+                </select>
+              </label>
+              <label class="feedback-message-field">
+                内容
+                <textarea id="feedback-message-field" class="text-area" rows="5" placeholder="ここに感想、困ったこと、欲しい機能、有料版に入っていたら検討する機能を書いてください。"></textarea>
+              </label>
+              <button class="primary-button compact-button" type="button" id="send-feedback-mail-button">メール作成</button>
+            </div>
+            <p class="form-status" id="feedback-status" aria-live="polite"></p>
+          </section>
+
+          <div class="tool-grid" id="enabled-tools"></div>
+        </section>
+
+        <section class="view" id="view-superMemo" aria-labelledby="memo-title">
+          <div class="page-head">
+            <div>
+              <h2 id="memo-title">Super Memo</h2>
+            </div>
+            <div class="page-actions">
+              <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+              <span class="action-label">新規メモ作成</span>
+              <button class="secondary-button" type="button" id="new-meeting-note-button">会議メモ</button>
+              <button class="secondary-button" type="button" id="new-idea-note-button">アイデアメモ</button>
+              <button class="secondary-button" type="button" id="new-blank-note-button">ブランクメモ</button>
+            </div>
+          </div>
+
+          <div class="memo-stats" aria-label="メモ統計">
+            <div class="stat-card">
+              <span>ノート</span>
+              <strong id="memo-stat-notes">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>リンク</span>
+              <strong id="memo-stat-links">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>人物</span>
+              <strong id="memo-stat-people">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>話題</span>
+              <strong id="memo-stat-topics">0</strong>
+            </div>
+          </div>
+
+          <div class="memo-layout">
+            <section class="memo-list-pane" aria-label="保存済みノート">
+              <label class="field-label" for="memo-search">検索</label>
+              <div class="memo-search-row">
+                <input id="memo-search" class="text-field" type="search" placeholder="全文検索">
+                <button class="primary-button compact-button icon-only-button" type="button" id="memo-search-button" aria-label="検索"><svg><use href="#icon-search"></use></svg></button>
+              </div>
+              <button class="secondary-button compact-button memo-detail-toggle" type="button" id="memo-detail-search-toggle" aria-expanded="false">詳細検索</button>
+
+              <div class="memo-filter-row is-collapsed" id="memo-detail-search-panel">
+                <select id="memo-search-mode" class="text-field compact-field" aria-label="検索条件">
+                  <option value="fullText">全文検索</option>
+                  <option value="tags">タグ検索</option>
+                  <option value="date">日付検索</option>
+                  <option value="attachments">添付あり</option>
+                  <option value="checkboxes">チェックボックスあり</option>
+                  <option value="pinned">ピン留め</option>
+                  <option value="recent">最近見たメモ</option>
+                  <option value="frequent">よく開くメモ</option>
+                </select>
+                <input id="memo-filter-people" class="text-field compact-field" type="search" placeholder="人物">
+                <input id="memo-filter-topics" class="text-field compact-field" type="search" placeholder="話題">
+                <input id="memo-filter-tags" class="text-field compact-field" type="search" placeholder="タグ">
+                <input id="memo-filter-date-from" class="text-field compact-field" type="date" aria-label="開始日">
+                <input id="memo-filter-date-to" class="text-field compact-field" type="date" aria-label="終了日">
+                <div class="memo-filter-suggestions" id="memo-filter-suggestions" aria-label="詳細検索候補" hidden></div>
+              </div>
+
+              <div class="memo-selection-bar">
+                <span id="memo-selection-count">0件選択</span>
+                <div class="selection-actions">
+                  <button class="secondary-button compact-button icon-only-button" type="button" id="select-all-memo-selection-button" aria-label="全選択"><svg><use href="#icon-files-check"></use></svg></button>
+                  <button class="secondary-button compact-button icon-only-button" type="button" id="clear-memo-selection-button" aria-label="全解除"><svg><use href="#icon-files-x"></use></svg></button>
+                  <button class="secondary-button compact-button icon-only-button" type="button" id="toggle-archive-box-button" aria-label="アーカイブを開く" aria-expanded="false"><svg><use href="#icon-archive"></use></svg></button>
+                </div>
+              </div>
+
+              <div class="memo-list" id="memo-list"></div>
+              <section class="archive-box" id="memo-archive-box" aria-label="アーカイブ済みメモ" hidden>
+                <div class="archive-box-head">
+                  <strong>アーカイブ</strong>
+                  <span id="memo-archive-count">0件</span>
+                </div>
+                <div class="memo-list archive-list" id="memo-archive-list"></div>
+              </section>
+            </section>
+
+            <section class="memo-editor" aria-label="ノート編集">
+              <form id="memo-form">
+                <input type="hidden" id="memo-id">
+
+                <div class="memo-title-row">
+                  <div>
+                    <label class="field-label" for="memo-title-field">ID</label>
+                    <input id="memo-title-field" class="text-field" type="text" readonly>
+                  </div>
+                  <div>
+                    <label class="field-label" for="memo-template-field">テンプレート</label>
+                    <select id="memo-template-field" class="text-field">
+                      <option value="Meeting">会議</option>
+                      <option value="Idea">アイデア</option>
+                      <option value="Blank">ブランク</option>
+                    </select>
+                  </div>
+                </div>
+
+                <label class="field-label practical-template-field" for="memo-practical-template-field">
+                  実用テンプレート
+                  <select id="memo-practical-template-field" class="text-field">
+                    <option value="">選択すると本文とプロパティへ反映</option>
+                  </select>
+                </label>
+
+                <label class="field-label" for="memo-display-title-field">タイトル</label>
+                <input id="memo-display-title-field" class="text-field" type="text" placeholder="あとで見返しやすいタイトル">
+
+                <div class="memo-priority-row">
+                  <button class="secondary-button icon-button star-button" type="button" id="star-memo-button" aria-label="スターを付ける" title="スターを付ける">☆</button>
+                  <label class="field-label priority-field" for="memo-importance-field">
+                    重要度
+                    <select id="memo-importance-field" class="text-field compact-select">
+                      <option value="0">なし</option>
+                      <option value="1">低</option>
+                      <option value="2">中</option>
+                      <option value="3">高</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div class="property-grid">
+                  <div>
+                    <label class="field-label" for="memo-date-field">date</label>
+                    <input id="memo-date-field" class="text-field" type="date">
+                  </div>
+                  <div>
+                    <label class="field-label" for="memo-categories-field">categories</label>
+                    <input id="memo-categories-field" class="text-field" type="text" placeholder="Meetings, Ideas">
+                  </div>
+                  <div>
+                    <label class="field-label" for="memo-people-field">people</label>
+                    <input id="memo-people-field" class="text-field" type="text" list="memo-people-options" placeholder="佐藤, 鈴木">
+                  </div>
+                  <div>
+                    <label class="field-label" for="memo-topics-field">topics</label>
+                    <input id="memo-topics-field" class="text-field" type="text" list="memo-topics-options" placeholder="価格, MVP">
+                  </div>
+                  <div>
+                    <label class="field-label" for="memo-tags-field">tags</label>
+                    <input id="memo-tags-field" class="text-field" type="text" placeholder="todo, research">
+                  </div>
+                </div>
+
+                <datalist id="memo-people-options"></datalist>
+                <datalist id="memo-topics-options"></datalist>
+
+                <div class="memo-preview-panel">
+                  <div class="output-head">
+                    <label class="field-label" for="memo-body-preview">本文</label>
+                    <div class="body-actions">
+                      <button class="secondary-button compact-button icon-only-button" type="button" id="copy-memo-body-button" aria-label="本文をコピー"><svg><use href="#icon-copy"></use></svg></button>
+                      <button class="secondary-button compact-button icon-only-button" type="button" id="focus-memo-body-button" aria-label="本文をフォーカス"><svg><use href="#icon-focus"></use></svg></button>
+                    </div>
+                  </div>
+                  <div id="memo-body-editor-host">
+                    <div id="memo-body-preview" class="memo-body-preview" contenteditable="true" role="textbox" aria-label="本文" spellcheck="true"></div>
+                  </div>
+                  <div class="id-command-popover" id="memo-id-command-popover" role="listbox" aria-label="ID検索候補" hidden></div>
+                </div>
+                <textarea id="memo-body-field" class="text-area memo-body is-hidden-source" aria-hidden="true" tabindex="-1"></textarea>
+                <p class="field-help">画像、URL、Windowsフォルダパスはそのまま貼り付けできます。文字を選択してCtrl+Kでリンクを設定できます。WebリンクはCtrl+クリックで開き、フォルダパスはCtrl+クリックまたはコピーでコピーします。</p>
+
+                <div class="memo-link-panel is-removed-ui" aria-hidden="true">
+                  <div>
+                    <label class="field-label" for="memo-link-search">リンク先を検索</label>
+                    <input id="memo-link-search" class="text-field" type="search" placeholder="タイトル、ID、人物、話題">
+                  </div>
+                  <div>
+                    <label class="field-label" for="memo-link-target">内部リンクを挿入</label>
+                    <select id="memo-link-target" class="text-field"></select>
+                  </div>
+                  <button class="secondary-button" type="button" id="insert-memo-link-button">IDリンク挿入</button>
+                </div>
+
+                <div class="related-links" id="memo-related-links" aria-label="関連リンク"></div>
+
+                <div class="memo-discovery-grid">
+                  <section class="memo-discovery-card">
+                    <div class="output-head compact-head">
+                      <h3>バックリンク</h3>
+                    </div>
+                    <div class="memo-chip-list" id="memo-backlinks"></div>
+                  </section>
+                  <section class="memo-discovery-card">
+                    <div class="output-head compact-head">
+                      <h3>リンク候補</h3>
+                    </div>
+                    <div class="memo-chip-list" id="memo-link-suggestions"></div>
+                  </section>
+                  <section class="memo-discovery-card">
+                    <div class="output-head compact-head">
+                      <h3>未接続メモ</h3>
+                    </div>
+                    <div class="memo-chip-list" id="memo-unconnected-list"></div>
+                  </section>
+                </div>
+
+                <div class="editor-actions">
+                  <button class="primary-button icon-only-button" type="submit" aria-label="保存"><svg><use href="#icon-save"></use></svg></button>
+                  <button class="secondary-button icon-only-button" type="button" id="pin-memo-button" aria-label="ピン留め"><svg><use href="#icon-pin"></use></svg></button>
+                  <button class="secondary-button icon-only-button" type="button" id="split-memo-button" aria-label="選択範囲を分割"><svg><use href="#icon-scissors"></use></svg></button>
+                  <button class="secondary-button icon-only-button" type="button" id="merge-memos-button" aria-label="選択メモを統合"><svg><use href="#icon-blocks"></use></svg></button>
+                  <button class="secondary-button icon-only-button" type="button" id="copy-memo-button" aria-label="メモをコピー"><svg><use href="#icon-copy"></use></svg></button>
+                  <button class="secondary-button icon-only-button" type="button" id="archive-memo-button" aria-label="アーカイブ"><svg><use href="#icon-archive"></use></svg></button>
+                  <button class="danger-button icon-only-button" type="button" id="delete-memo-button" aria-label="削除"><svg><use href="#icon-trash"></use></svg></button>
+                </div>
+              </form>
+              <p class="status-line" id="memo-status-line" role="status"></p>
+            </section>
+
+            <section class="memo-graph-pane" aria-label="グラフビュー">
+              <div class="output-head">
+                <div class="graph-actions">
+                  <select id="memo-graph-mode" class="text-field compact-select" aria-label="グラフ表示">
+                    <option value="nearby">周辺</option>
+                    <option value="filtered">検索結果</option>
+                    <option value="all">全体</option>
+                  </select>
+                  <select id="memo-graph-cluster-by" class="text-field compact-select" aria-label="グラフ配置">
+                    <option value="topics">topics</option>
+                    <option value="people">people</option>
+                    <option value="categories">categories</option>
+                    <option value="tags">tags</option>
+                  </select>
+                  <label class="inline-check">
+                    <input id="memo-graph-include-archived" type="checkbox">
+                    アーカイブを含める
+                  </label>
+                  <button class="secondary-button compact-button icon-only-button" type="button" id="focus-memo-graph-button" aria-label="グラフをフォーカス"><svg><use href="#icon-focus"></use></svg></button>
+                  <button class="secondary-button compact-button icon-only-button" type="button" id="fit-memo-graph-button" aria-label="グラフを更新"><svg><use href="#icon-refresh"></use></svg></button>
+                </div>
+              </div>
+              <svg id="memo-graph" class="memo-graph" role="img" aria-label="ノートの内部リンクグラフ"></svg>
+            </section>
+          </div>
+
+          <section class="graph-focus-layer" id="memo-graph-focus-layer" aria-label="グラフフォーカス" aria-hidden="true">
+            <div class="graph-focus-head">
+              <div>
+                <p class="eyebrow">グラフ</p>
+                <h3>フォーカスモード</h3>
+              </div>
+              <div class="graph-actions">
+                <select id="memo-graph-focus-mode" class="text-field compact-select" aria-label="フォーカスグラフ表示">
+                  <option value="nearby">周辺</option>
+                  <option value="filtered">検索結果</option>
+                  <option value="all">全体</option>
+                </select>
+                <select id="memo-graph-focus-cluster-by" class="text-field compact-select" aria-label="フォーカスグラフ配置">
+                  <option value="topics">topics</option>
+                  <option value="people">people</option>
+                  <option value="categories">categories</option>
+                  <option value="tags">tags</option>
+                </select>
+                <button class="secondary-button compact-button" type="button" id="close-memo-graph-focus-button">閉じる</button>
+              </div>
+            </div>
+            <svg id="memo-graph-focus" class="memo-graph memo-graph-focus" role="img" aria-label="ノートの内部リンクグラフ拡大表示"></svg>
+          </section>
+
+          <section class="memo-body-focus-layer" id="memo-body-focus-layer" aria-label="本文フォーカス" aria-hidden="true">
+            <div class="memo-body-focus-head">
+              <div>
+                <p class="eyebrow">本文</p>
+                <h3>フォーカスモード</h3>
+              </div>
+              <button class="secondary-button compact-button" type="button" id="close-memo-body-focus-button">閉じる</button>
+            </div>
+            <div class="memo-body-focus-editor" id="memo-body-focus-editor-host"></div>
+          </section>
+
+          <section class="memo-data-panel" id="memo-drop-zone" aria-label="データ退避">
+            <div>
+              <p class="eyebrow">退避</p>
+              <h3>エクスポート / インポート</h3>
+              <p>JSON形式はローカル保存、Markdown/Word形式は選択メモの一括出力に使います。JSONファイルはここへドラッグ&ドロップして読み込めます。</p>
+            </div>
+            <div class="data-actions">
+              <label class="inline-check auto-save-check">
+                <input id="memo-auto-save-enabled" type="checkbox">
+                JSONを自動保存
+              </label>
+              <button class="secondary-button" type="button" id="set-auto-save-file-button">自動保存先を設定</button>
+              <label class="export-format-field">
+                <span class="field-label">形式</span>
+                <select id="memo-export-format" class="text-field">
+                  <option value="json">JSON形式</option>
+                  <option value="markdown">Markdown形式</option>
+                  <option value="word">Word形式</option>
+                </select>
+              </label>
+              <button class="primary-button" type="button" id="export-memos-button">エクスポート</button>
+              <label class="secondary-button file-button">
+                インポート
+                <input id="import-memos-field" type="file" accept="application/json">
+              </label>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="view-settings" aria-labelledby="settings-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">ホーム</p>
+              <h2 id="settings-title" title="ツール設定">ツール設定</h2>
+            </div>
+            <div class="page-actions">
+              <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+            </div>
+          </div>
+
+          <div class="settings-list" id="tool-settings"></div>
+        </section>
+
+        <section class="secret-game-layer" id="secret-game-layer" aria-label="隠しゲーム" aria-hidden="true">
+          <div class="secret-game-panel">
+            <div class="secret-game-head">
+              <div>
+                <p class="eyebrow">Secret</p>
+                <h3>Lumen Sweep</h3>
+              </div>
+              <div class="secret-game-actions">
+                <button class="secondary-button compact-button" type="button" id="secret-game-restart-button">リスタート</button>
+                <button class="secondary-button compact-button" type="button" id="secret-game-close-button">閉じる</button>
+              </div>
+            </div>
+            <canvas id="secret-game-canvas" class="secret-game-canvas" width="720" height="420" tabindex="0" aria-label="左右キーで移動、スペースでルーメンを発射"></canvas>
+            <p class="secret-game-help">← → / A D で移動、Spaceでルーメン発射、Escで閉じる。全10ステージ。</p>
+          </div>
+        </section>
+
+        <section class="view" id="view-promptPad" aria-labelledby="prompt-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">ツール</p>
+              <h2 id="prompt-title">プロンプトパッド</h2>
+            </div>
+            <div class="page-actions">
+              <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+              <button class="primary-button" type="button" id="new-prompt-button">
+                新規
+              </button>
+            </div>
+          </div>
+
+          <div class="prompt-layout">
+            <section class="prompt-list-pane" aria-label="保存済みプロンプト">
+              <label class="field-label" for="prompt-search">検索</label>
+              <input id="prompt-search" class="text-field" type="search" placeholder="タイトル、タグ、本文">
+              <div class="prompt-list" id="prompt-list"></div>
+            </section>
+
+            <section class="prompt-editor" aria-label="プロンプト編集">
+              <form id="prompt-form">
+                <input type="hidden" id="prompt-id">
+
+                <label class="field-label" for="prompt-title-field">タイトル</label>
+                <input id="prompt-title-field" class="text-field" type="text" placeholder="週次レビュー用プロンプト">
+
+                <label class="field-label" for="prompt-tags-field">タグ</label>
+                <input id="prompt-tags-field" class="text-field" type="text" placeholder="codex, レビュー">
+                <div class="tag-picker" id="tag-picker" aria-label="登録済みタグ"></div>
+
+                <label class="field-label" for="prompt-body-field">本文</label>
+                <textarea id="prompt-body-field" class="text-area" placeholder="ここにプロンプトを書く"></textarea>
+
+                <div class="editor-actions">
+                  <button class="primary-button" type="submit">保存</button>
+                  <button class="secondary-button" type="button" id="copy-prompt-button">コピー</button>
+                  <button class="danger-button" type="button" id="delete-prompt-button">削除</button>
+                </div>
+              </form>
+              <p class="status-line" id="status-line" role="status"></p>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-textCleaner" aria-labelledby="text-cleaner-title">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">ツール</p>
+              <h2 id="text-cleaner-title">メモ整形</h2>
+            </div>
+            <div class="page-actions">
+              <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+              <button class="secondary-button" type="button" id="clear-text-button">
+                クリア
+              </button>
+            </div>
+          </div>
+
+          <div class="cleaner-layout">
+            <section class="cleaner-panel" aria-label="整形前テキスト">
+              <label class="field-label" for="text-cleaner-input">入力</label>
+              <textarea id="text-cleaner-input" class="text-area cleaner-area" placeholder="会議ログ、文字起こし、アイデアの雑メモ、箇条書きを貼り付ける"></textarea>
+
+              <div class="cleaner-actions" aria-label="整形アクション">
+                <button class="secondary-button" type="button" data-cleaner-action="toMeetingMemo">会議メモ化</button>
+                <button class="secondary-button" type="button" data-cleaner-action="toIdeaMemo">アイデアメモ化</button>
+                <button class="secondary-button" type="button" data-cleaner-action="extractTasks">TODO抽出</button>
+                <button class="secondary-button" type="button" data-cleaner-action="cleanMarkdown">Markdown整形</button>
+                <button class="secondary-button" type="button" data-cleaner-action="trimLines">行の前後を削る</button>
+                <button class="secondary-button" type="button" data-cleaner-action="normalizeSpaces">空白を整える</button>
+                <button class="secondary-button" type="button" data-cleaner-action="removeBlankLines">空行を削除</button>
+                <button class="secondary-button" type="button" data-cleaner-action="toBullets">箇条書き化</button>
+              </div>
+            </section>
+
+            <section class="cleaner-panel" aria-label="整形後テキスト">
+              <div class="output-head">
+                <label class="field-label" for="text-cleaner-output">出力</label>
+                <button class="primary-button compact-button" type="button" id="copy-cleaner-output-button">コピー</button>
+              </div>
+              <textarea id="text-cleaner-output" class="text-area cleaner-area" placeholder="整形結果がここに表示されます"></textarea>
+
+              <div class="stats-grid" aria-label="テキスト情報">
+                <div class="stat-card">
+                  <span>文字数</span>
+                  <strong id="text-stat-chars">0</strong>
+                </div>
+                <div class="stat-card">
+                  <span>行数</span>
+                  <strong id="text-stat-lines">0</strong>
+                </div>
+              </div>
+              <p class="status-line" id="text-cleaner-status" role="status"></p>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-pomodoro" aria-labelledby="pomodoro-title">
+          <div class="pomodoro-shell">
+            <div class="pomodoro-head">
+              <div>
+                <p class="eyebrow">Focus</p>
+                <h2 id="pomodoro-title">ポモドーロ</h2>
+              </div>
+              <div class="pomodoro-head-actions">
+                <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+              </div>
+            </div>
+
+            <div class="pomodoro-stage" aria-label="ポモドーロタイマー">
+              <svg class="pomodoro-orbit" viewBox="0 0 320 320" role="img" aria-label="集中タイマーの進捗">
+                <defs>
+                  <filter id="timer-glow" x="-80%" y="-80%" width="260%" height="260%">
+                    <feGaussianBlur stdDeviation="5" result="softGlow"></feGaussianBlur>
+                    <feGaussianBlur stdDeviation="14" result="wideGlow"></feGaussianBlur>
+                    <feMerge>
+                      <feMergeNode in="wideGlow"></feMergeNode>
+                      <feMergeNode in="softGlow"></feMergeNode>
+                      <feMergeNode in="SourceGraphic"></feMergeNode>
+                    </feMerge>
+                  </filter>
+                </defs>
+                <circle class="pomodoro-orbit-bg" cx="160" cy="160" r="118"></circle>
+                <circle id="pomodoro-progress" class="pomodoro-orbit-progress" cx="160" cy="160" r="118"></circle>
+                <circle class="pomodoro-core" cx="160" cy="160" r="16"></circle>
+                <g class="pomodoro-particles" aria-hidden="true">
+                  <circle cx="160" cy="36" r="3"></circle>
+                  <circle cx="248" cy="75" r="2.4"></circle>
+                  <circle cx="283" cy="164" r="2.8"></circle>
+                  <circle cx="226" cy="258" r="2.2"></circle>
+                  <circle cx="99" cy="264" r="2.6"></circle>
+                  <circle cx="43" cy="150" r="2.2"></circle>
+                </g>
+              </svg>
+
+              <div class="pomodoro-readout">
+                <strong id="pomodoro-time">25:00</strong>
+                <span id="pomodoro-status">集中</span>
+              </div>
+            </div>
+
+            <div class="pomodoro-controls" aria-label="タイマー操作">
+              <div class="pomodoro-modes" role="group" aria-label="タイマーモード">
+                <button class="secondary-button compact-button is-active" type="button" data-timer-mode="focus">25</button>
+                <button class="secondary-button compact-button" type="button" data-timer-mode="short">5</button>
+                <button class="secondary-button compact-button" type="button" data-timer-mode="long">15</button>
+              </div>
+              <button class="primary-button" type="button" id="pomodoro-toggle-button">開始</button>
+              <button class="secondary-button" type="button" id="pomodoro-loop-button" aria-pressed="false">自動ループ OFF</button>
+              <button class="secondary-button" type="button" id="pomodoro-reset-button">リセット</button>
+            </div>
+
+            <div class="pomodoro-custom" aria-label="時間設定">
+              <label>
+                Focus
+                <input id="pomodoro-focus-minutes" class="text-field compact-field" type="number" min="1" max="180" step="1" value="25">
+              </label>
+              <label>
+                Break
+                <input id="pomodoro-short-minutes" class="text-field compact-field" type="number" min="1" max="60" step="1" value="5">
+              </label>
+              <label>
+                Long
+                <input id="pomodoro-long-minutes" class="text-field compact-field" type="number" min="1" max="120" step="1" value="15">
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-timezones" aria-labelledby="timezone-title">
+          <div class="timezone-shell">
+            <div class="timezone-head">
+              <div>
+                <p class="eyebrow">World Clock</p>
+                <h2 id="timezone-title">世界時計</h2>
+              </div>
+              <div class="timezone-add">
+                <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+                <select id="timezone-select" class="text-field compact-select" aria-label="追加する拠点"></select>
+                <button class="secondary-button compact-button" type="button" id="timezone-add-button">追加</button>
+              </div>
+            </div>
+
+            <div class="timezone-grid" id="timezone-list" aria-label="複数拠点の現在時刻"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-subscriptions" aria-labelledby="subscriptions-title">
+          <div class="subscription-shell">
+            <div class="subscription-head">
+              <div>
+                <p class="eyebrow">Subscriptions</p>
+                <h2 id="subscriptions-title">サブスク管理</h2>
+              </div>
+              <div class="subscription-summary" aria-label="サブスク合計">
+                <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+                <span>月額 <strong id="subscription-monthly-total">¥0</strong></span>
+                <span>年額 <strong id="subscription-yearly-total">¥0</strong></span>
+              </div>
+            </div>
+
+            <form class="subscription-form" id="subscription-form">
+              <label>
+                テンプレ
+                <select id="subscription-template" class="text-field compact-select">
+                  <option value="">手入力</option>
+                </select>
+              </label>
+              <label>
+                サービス
+                <input id="subscription-name" class="text-field" type="text" placeholder="例: Adobe CC" required>
+              </label>
+              <label>
+                料金
+                <input id="subscription-price" class="text-field compact-field" type="number" min="0" step="1" placeholder="1980" required>
+              </label>
+              <label>
+                周期
+                <select id="subscription-billing-cycle" class="text-field compact-select">
+                  <option value="monthly">月額</option>
+                  <option value="yearly">年額</option>
+                </select>
+              </label>
+              <label>
+                登録日
+                <input id="subscription-registered-at" class="text-field compact-field" type="date" required>
+              </label>
+              <label>
+                引落日
+                <input id="subscription-debit-day" class="text-field compact-field" type="number" min="1" max="31" step="1" placeholder="任意">
+              </label>
+              <button class="primary-button compact-button" type="submit">追加</button>
+            </form>
+            <p class="form-status" id="subscription-status" aria-live="polite"></p>
+
+            <div class="subscription-list" id="subscription-list" aria-label="契約中サービス一覧"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-bookmarks" aria-labelledby="bookmarks-title">
+          <div class="bookmark-shell">
+            <div class="bookmark-head">
+              <div>
+                <p class="eyebrow">Bookmarks</p>
+                <h2 id="bookmarks-title">ブックマーク</h2>
+              </div>
+              <div class="bookmark-import">
+                <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+                <label class="secondary-button compact-button" for="bookmark-import-file">インポート</label>
+                <input id="bookmark-import-file" type="file" accept=".html,.htm,.json,application/json,text/html" hidden>
+                <button class="secondary-button compact-button icon-only-button" type="button" id="bookmark-delete-mode-button" aria-label="削除モード" aria-pressed="false"><svg><use href="#icon-trash"></use></svg></button>
+                <button class="danger-button compact-button" type="button" id="bookmark-delete-selected-button" hidden>削除</button>
+              </div>
+            </div>
+
+            <div class="bookmark-toolbar">
+              <input id="bookmark-search" class="text-field" type="search" placeholder="ブックマークを検索">
+              <select id="bookmark-folder-filter" class="text-field compact-select" aria-label="フォルダで絞り込み">
+                <option value="">トップ（未分類）</option>
+              </select>
+            </div>
+
+            <div class="bookmark-folder-panel">
+              <form class="bookmark-folder-form" id="bookmark-folder-form">
+                <label>
+                  フォルダ
+                  <input id="bookmark-folder-name-field" class="text-field compact-field" type="text" placeholder="例: 仕事">
+                </label>
+                <label>
+                  色
+                  <input id="bookmark-folder-color-field" class="text-field color-field" type="color" value="#8feeff">
+                </label>
+                <button class="secondary-button compact-button" type="submit">作成</button>
+              </form>
+              <div class="bookmark-folder-list" id="bookmark-folder-list" aria-label="ブックマークフォルダ一覧"></div>
+            </div>
+
+            <form class="bookmark-form" id="bookmark-form">
+              <label>
+                タイトル
+                <input id="bookmark-title-field" class="text-field" type="text" placeholder="例: 管理画面" required>
+              </label>
+              <label>
+                URL
+                <input id="bookmark-url-field" class="text-field" type="url" placeholder="https://example.com" required>
+              </label>
+              <label>
+                フォルダ
+                <select id="bookmark-folder-field" class="text-field compact-select">
+                  <option value="">フォルダなし</option>
+                </select>
+              </label>
+              <button class="primary-button compact-button" type="submit">追加</button>
+            </form>
+            <p class="form-status" id="bookmark-status" aria-live="polite"></p>
+
+            <div class="bookmark-grid" id="bookmark-list" aria-label="ブックマーク一覧"></div>
+
+            <div class="bookmark-edit-modal" id="bookmark-edit-modal" hidden>
+              <div class="bookmark-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="bookmark-edit-title">
+                <div class="bookmark-edit-head">
+                  <h3 id="bookmark-edit-title">ブックマークを編集</h3>
+                  <button class="secondary-button compact-button" type="button" id="bookmark-edit-close-button">閉じる</button>
+                </div>
+                <form class="bookmark-edit-form" id="bookmark-edit-form">
+                  <label>
+                    名前
+                    <input id="bookmark-edit-title-field" class="text-field" name="title" type="text" required>
+                  </label>
+                  <label>
+                    URL
+                    <input id="bookmark-edit-url-field" class="text-field" name="url" type="url" required>
+                  </label>
+                  <label>
+                    フォルダ
+                    <select id="bookmark-edit-folder-field" class="text-field compact-select" name="folder">
+                      <option value="">フォルダなし</option>
+                    </select>
+                  </label>
+                  <div class="bookmark-edit-actions">
+                    <button class="primary-button compact-button" type="submit">保存</button>
+                    <button class="secondary-button compact-button" type="button" id="bookmark-edit-cancel-button">キャンセル</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-videoFinder" aria-labelledby="video-finder-title">
+          <div class="video-finder-shell">
+            <div class="video-finder-head">
+              <div>
+                <p class="eyebrow">Video Exact Finder</p>
+                <h2 id="video-finder-title">動画検索</h2>
+              </div>
+              <div class="page-actions">
+                <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+                <a class="secondary-button compact-button" id="video-youtube-search-link" href="https://www.youtube.com/results" target="_blank" rel="noreferrer">YouTubeで開く</a>
+              </div>
+            </div>
+
+            <div class="video-key-panel">
+              <label>
+                YouTube Data API key
+                <input id="video-api-key" class="text-field" type="password" autocomplete="off" placeholder="ブラウザ内だけに保存">
+              </label>
+              <div class="video-key-actions">
+                <button class="secondary-button compact-button" type="button" id="video-save-api-key-button">保存</button>
+                <button class="secondary-button compact-button" type="button" id="video-clear-api-key-button">削除</button>
+              </div>
+            </div>
+
+            <form class="video-search-form" id="video-search-form">
+              <label class="video-query-field">
+                検索キーワード
+                <input id="video-query" class="text-field" type="search" placeholder="例: 筋トレ 初心者 フォーム" required>
+              </label>
+              <div class="video-control-grid">
+                <label>
+                  並び順
+                  <select id="video-order" class="text-field compact-select">
+                    <option value="relevance">一致度優先</option>
+                    <option value="date">新しい順</option>
+                    <option value="oldest">古い順</option>
+                    <option value="viewCount">再生回数順</option>
+                    <option value="subscriberCount">登録者数順</option>
+                    <option value="title">タイトル順</option>
+                  </select>
+                </label>
+                <label>
+                  件数
+                  <select id="video-max-results" class="text-field compact-select">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                  </select>
+                </label>
+                <label>
+                  地域
+                  <select id="video-region-code" class="text-field compact-select">
+                    <option value="JP">JP</option>
+                    <option value="US">US</option>
+                    <option value="GB">GB</option>
+                    <option value="KR">KR</option>
+                    <option value="">指定なし</option>
+                  </select>
+                </label>
+                <label>
+                  優先言語
+                  <select id="video-language" class="text-field compact-select">
+                    <option value="ja">ja</option>
+                    <option value="en">en</option>
+                    <option value="ko">ko</option>
+                    <option value="">指定なし</option>
+                  </select>
+                </label>
+              </div>
+              <div class="video-option-row">
+                <label><input id="video-title-only" type="checkbox"> タイトル完全一致だけ</label>
+                <label><input id="video-hide-loose" type="checkbox" checked> 一致弱めを隠す</label>
+              </div>
+              <div class="video-actions">
+                <button class="primary-button compact-button" type="submit">検索</button>
+                <button class="secondary-button compact-button" type="button" id="video-clear-results-button">結果クリア</button>
+              </div>
+            </form>
+
+            <p class="form-status" id="video-status-line" aria-live="polite">APIキーを保存し、検索キーワードを入力してください。</p>
+            <div class="video-results" id="video-results" aria-label="動画検索結果"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-calculator" aria-labelledby="calculator-title">
+          <div class="calculator-shell">
+            <div class="calculator-head">
+              <div>
+                <p class="eyebrow">Calculator</p>
+                <h2 id="calculator-title">電卓</h2>
+              </div>
+              <div class="page-actions">
+                <button class="secondary-button compact-button icon-only-button home-return-button" type="button" data-view="home" aria-label="ホームへ戻る"><svg><use href="#icon-home"></use></svg></button>
+                <button class="secondary-button compact-button" type="button" id="calculator-copy-button">結果をコピー</button>
+              </div>
+            </div>
+
+            <div class="calculator-layout">
+              <section class="calculator-panel" aria-label="電卓">
+                <div class="calculator-display" aria-live="polite">
+                  <span id="calculator-expression">0</span>
+                  <strong id="calculator-display">0</strong>
+                </div>
+                <div class="calculator-grid" aria-label="計算ボタン">
+                  <button type="button" data-calc-action="clear">AC</button>
+                  <button type="button" data-calc-action="backspace">⌫</button>
+                  <button type="button" data-calc-value="%">%</button>
+                  <button type="button" data-calc-value="÷" class="operator">÷</button>
+                  <button type="button" data-calc-value="7">7</button>
+                  <button type="button" data-calc-value="8">8</button>
+                  <button type="button" data-calc-value="9">9</button>
+                  <button type="button" data-calc-value="×" class="operator">×</button>
+                  <button type="button" data-calc-value="4">4</button>
+                  <button type="button" data-calc-value="5">5</button>
+                  <button type="button" data-calc-value="6">6</button>
+                  <button type="button" data-calc-value="−" class="operator">−</button>
+                  <button type="button" data-calc-value="1">1</button>
+                  <button type="button" data-calc-value="2">2</button>
+                  <button type="button" data-calc-value="3">3</button>
+                  <button type="button" data-calc-value="+" class="operator">+</button>
+                  <button type="button" data-calc-value="(">(</button>
+                  <button type="button" data-calc-value="0">0</button>
+                  <button type="button" data-calc-value=".">.</button>
+                  <button type="button" data-calc-value=")">)</button>
+                  <button type="button" data-calc-action="equals" class="equals">=</button>
+                </div>
+              </section>
+
+              <section class="calculator-history-panel" aria-label="計算履歴">
+                <div class="output-head">
+                  <h3>履歴</h3>
+                  <button class="secondary-button compact-button" type="button" id="calculator-clear-history-button">クリア</button>
+                </div>
+                <div class="calculator-history" id="calculator-history"></div>
+                <p class="form-status" id="calculator-status" aria-live="polite"></p>
+              </section>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
